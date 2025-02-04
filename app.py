@@ -33,8 +33,7 @@ def preprocess_image(image):
 @st.cache_resource
 def load_model():
     try:
-        # ID du fichier sur Google Drive
-        file_id = "10QhOSIebVwsgasKHar-bLnwtyReEAWXL"  # ID du fichier modèle
+        file_id = "https://drive.google.com/uc?id=10QhOSIebVwsgasKHar-bLnwtyReEAWXL"
         model_path = "modele_agricultural_pests.h5"
 
         # Télécharger le modèle s'il n'existe pas localement
