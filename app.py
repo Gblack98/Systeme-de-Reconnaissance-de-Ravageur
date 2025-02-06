@@ -24,9 +24,9 @@ def reconstituer_fichier(parties, fichier_final):
             for partie in parties:
                 with open(partie, "rb") as part_file:
                     f.write(part_file.read())
-        print(f"Fichier {fichier_final} reconstitué avec succès.")
+        st.success(f"Fichier {fichier_final} reconstitué avec succès.")
     else:
-        print(f"Le fichier {fichier_final} existe déjà.")
+        st.info(f"Le fichier {fichier_final} existe déjà.")
 
 # Charger le modèle avec mise en cache
 @st.cache_resource
@@ -215,7 +215,7 @@ if uploaded_file is not None:
 
 # Bouton pour réinitialiser l'application
 if st.button("Réinitialiser"):
-    st.experimental_rerun()
+    st.rerun()  # Utilisez st.rerun() au lieu de st.experimental_rerun()
 
 st.write("---")
 st.markdown("""
