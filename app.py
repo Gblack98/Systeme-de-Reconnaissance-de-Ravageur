@@ -5,7 +5,6 @@ import cv2
 from PIL import Image
 import tempfile
 import os
-import gdown
 
 # Configuration de la page Streamlit
 st.set_page_config(
@@ -15,34 +14,33 @@ st.set_page_config(
     initial_sidebar_state="expanded"
 )
 
-# Fonction pour télécharger le modèle depuis Google Drive
-def download_model_from_drive(file_id, output_path):
-    url = f"https://drive.google.com/uc?id={file_id}"
-    gdown.download(url, output_path, quiet=False)
-
-# Fonction pour prétraiter l'image
-def preprocess_image(image):
-    if image.mode != 'RGB':
-        image = image.convert('RGB')
-    image = image.resize((299, 299))  # Taille standard pour InceptionV3
-    image_np = np.array(image) / 255.0  # Normaliser entre 0 et 1
-    image_np = np.expand_dims(image_np, axis=0)  # Ajouter la dimension batch
-    return image_np
+# Fonction pour reconstituer le fichier
+def reconstituer_fichier(parties, fichier_final):
+    """
+    Reconstituer le fichier final à partir des parties divisées.
+    """
+    if not os.path.exists(fichier_final):
+        with open(fichier_final, "wb") as f:
+            for partie in parties:
+                with open(partie, "rb") as part_file:
+                    f.write(part_file.read())
+        print(f"Fichier {fichier_final} reconstitué avec succès.")
+    else:
+        print(f"Le fichier {fichier_final} existe déjà.")
 
 # Charger le modèle avec mise en cache
 @st.cache_resource
 def load_model():
     try:
-        file_id = "https://drive.google.com/uc?id=10QhOSIebVwsgasKHar-bLnwtyReEAWXL"
-        model_path = "modele_agricultural_pests.h5"
+        # Liste des parties du fichier
+        parties = ["modele_part_aa", "modele_part_ab", "modele_part_ac", "modele_part_ad", "modele_part_ae"]
+        fichier_final = "modele_agricultural_pests (2).h5"
 
-        # Télécharger le modèle s'il n'existe pas localement
-        if not os.path.exists(model_path):
-            st.write("Téléchargement du modèle depuis Google Drive...")
-            download_model_from_drive(file_id, model_path)
+        # Reconstituer le fichier
+        reconstituer_fichier(parties, fichier_final)
 
         # Charger le modèle
-        model = tf.keras.models.load_model(model_path)
+        model = tf.keras.models.load_model(fichier_final)
         return model
     except Exception as e:
         st.error(f"Erreur lors du chargement du modèle : {str(e)}")
@@ -223,5 +221,4 @@ st.write("---")
 st.markdown("""
     **Application développée avec :**
     - [Streamlit](https://streamlit.io)
-    - [Google Drive](https://drive.google.com) pour le stockage des fichiers volumineux
     """)
